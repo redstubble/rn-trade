@@ -65,21 +65,6 @@ class Trade extends Component {
 
 export default createBottomTabNavigator(
   {
-    Trade: {
-      screen: Trade,
-      path: '/',
-      navigationOptions: {
-        title: 'Entry Exit Positions',
-        tabBarLabel: 'Trade',
-        tabBarIcon: ({ tintColor, focused }) => (
-          <Ionicons
-            name={focused ? `${iconName}-analytics` : `${iconName}-trending-up`}
-            size={26}
-            style={{ color: tintColor }}
-          />
-        ),
-      },
-    },
     Calculator: {
       screen: Calculator,
       path: '/',
@@ -93,6 +78,21 @@ export default createBottomTabNavigator(
                 ? `${iconName}-checkmark-circle`
                 : `${iconName}-checkmark-circle-outline`
             }
+            size={26}
+            style={{ color: tintColor }}
+          />
+        ),
+      },
+    },
+    Trade: {
+      screen: Trade,
+      path: '/',
+      navigationOptions: {
+        title: 'Entry Exit Positions',
+        tabBarLabel: 'Trade',
+        tabBarIcon: ({ tintColor, focused }) => (
+          <Ionicons
+            name={focused ? `${iconName}-analytics` : `${iconName}-trending-up`}
             size={26}
             style={{ color: tintColor }}
           />
@@ -122,7 +122,7 @@ export default createBottomTabNavigator(
         // isAndroid && StatusBar.setBackgroundColor('#6a51ae');
         // jumpToIndex(scene.index);
       }),
-      InitialRouteName: 'Trade',
+      InitialRouteName: 'Calculator',
       headerMode: 'none',
     },
   },

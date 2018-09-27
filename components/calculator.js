@@ -1,6 +1,6 @@
 import React from 'react';
 import {
-  SafeAreaView,
+  Picker,
   ActivityIndicator,
   ScrollView,
   Text,
@@ -50,54 +50,10 @@ class Calculator extends React.Component {
     prevStateFormFields: null,
   };
 
-  handleEntryChange(t) {
-    const n = t.replace(/[^0-9]/g, '');
-    console.log(n);
-    this.setState((prevState) => ({
-      formFields: {
-        ...prevState.formFields,
-        entry: n,
-      },
-    }));
-  }
-
-  handleStopLossChange(t) {
-    const n = t.replace(/[^0-9]/g, '');
-    this.setState((prevState) => ({
-      formFields: {
-        ...prevState.formFields,
-        stopLoss: n,
-      },
-    }));
-  }
-  handleMakerFeeChange(t) {
-    const n = t.replace(/[^0-9]/g, '');
-    this.setState((prevState) => ({
-      formFields: {
-        ...prevState.formFields,
-        makerFee: n,
-      },
-    }));
-  }
-  handleTakerFeeChange(t) {
-    const n = t.replace(/[^0-9]/g, '');
-    this.setState((prevState) => ({
-      formFields: {
-        ...prevState.formFields,
-        takerFee: n,
-      },
-    }));
-  }
-
-  handleRiskChange(t) {
-    const n = t.replace(/[^0-9]/g, '');
-    this.setState((prevState) => ({
-      formFields: {
-        ...prevState.formFields,
-        risk: n,
-      },
-    }));
-  }
+  componentDidMount = () =>
+    this.setState({
+      exchange: this.getExchanges()[0],
+    });
 
   componentDidUpdate = () => {
     // do not check if risk has changed
@@ -108,6 +64,58 @@ class Calculator extends React.Component {
       this.setState({ stake: s, prevStateFormFields: a });
     }
   };
+
+  handleEntryChange(t) {
+    const n = this.numOnly(t);
+    this.setState((prevState) => ({
+      formFields: {
+        ...prevState.formFields,
+        entry: n,
+      },
+    }));
+  }
+
+  handleStopLossChange(t) {
+    const n = this.numOnly(t);
+    this.setState((prevState) => ({
+      formFields: {
+        ...prevState.formFields,
+        stopLoss: n,
+      },
+    }));
+  }
+
+  handleMakerFeeChange(t) {
+    const n = this.numOnly(t);
+    this.setState((prevState) => ({
+      formFields: {
+        ...prevState.formFields,
+        makerFee: n,
+      },
+    }));
+  }
+
+  handleTakerFeeChange(t) {
+    const n = this.numOnly(t);
+    this.setState((prevState) => ({
+      formFields: {
+        ...prevState.formFields,
+        takerFee: n,
+      },
+    }));
+  }
+
+  handleRiskChange(t) {
+    const n = this.numOnly(t);
+    this.setState((prevState) => ({
+      formFields: {
+        ...prevState.formFields,
+        risk: n,
+      },
+    }));
+  }
+
+  numOnly = (t) => t.replace(/[^0-9]/g, '');
 
   calculateStake = () => {
     const { makerFee, takerFee, entry, stopLoss, risk } = this.state.formFields;
@@ -134,6 +142,44 @@ class Calculator extends React.Component {
     return stake - stakeTf - stakeMf;
   };
 
+  getExchanges = () => {
+    const exchanges = [
+      {
+        label: 'BitFinex',
+        value: 'bitfinex',
+      },
+      {
+        label: 'Kraken',
+        value: 'kraken',
+      },
+      {
+        label: 'Poloniex',
+        value: 'poloniex',
+      },
+      {
+        label: 'BitTrex',
+        value: 'bittrex',
+      },
+      {
+        label: 'Binance',
+        value: 'binance',
+      },
+      {
+        label: 'BitStamp',
+        value: 'bitstamp',
+      },
+      {
+        label: 'SimpleFX',
+        value: 'simplefx',
+      },
+      {
+        label: 'Independent Reserve',
+        value: 'independent reserve',
+      },
+    ];
+    return exchanges;
+  };
+
   render({ navigation } = this.props) {
     return (
       <CustomSafeAreaView style={[styles.container]}>
@@ -151,6 +197,17 @@ class Calculator extends React.Component {
             // justifyContent: 'space-between',
           }
         >
+          <Picker
+            selectedValue={this.state.exchange}
+            style={{ height: 50, width: 100 }}
+            onValueChange={(itemValue, itemIndex) =>
+              this.setState({ exchange: itemValue })
+            }
+          >
+            {this.getExchanges().map((a) => (
+              <Picker.Item label={a.label} value={a.value} />
+            ))}
+          </Picker>
           <KeyboardAvoidingView
             style={{ flex: 0, height: '100%' }}
             behavior="padding"
@@ -158,101 +215,94 @@ class Calculator extends React.Component {
           >
             <View
               style={{
-                flex: 4,
+                flex: 1,
                 justifyContent: 'flex-start',
                 alignItems: 'center',
                 padding: 20,
               }}
             >
-              <View style={{ flex: 1, marginTop: 20 }}>
-                <View>
-                  <Text>Entry</Text>
-                  <FormTextInput
-                    controlFunc={this.handleEntryChange}
-                    name="Entry Position"
-                    styles={{
-                      borderTopLeftRadius: 2,
-                      borderTopRightRadius: 2,
-                      borderColor: 'darkred',
-                      borderBottomWidth: 2,
-                    }}
-                  />
-                </View>
-
-                <FormTextInput
-                  controlFunc={this.handleStopLossChange}
-                  name="Stop Loss"
-                  styles={{
+              <FormTextInput
+                controlFunc={this.handleEntryChange}
+                name="Entry Position"
+                styles={{
+                  borderTopLeftRadius: 2,
+                  borderTopRightRadius: 2,
+                  borderColor: 'darkred',
+                  borderBottomWidth: 2,
+                }}
+              />
+              <FormTextInput
+                controlFunc={this.handleStopLossChange}
+                name="Stop Loss"
+                styles={{
+                  borderTopLeftRadius: 2,
+                  borderTopRightRadius: 2,
+                  borderColor: 'darkred',
+                  borderBottomWidth: 2,
+                }}
+              />
+              <FormTextInput
+                calculatedValue={this.state.formFields.makerFee.toString()}
+                controlFunc={this.handleMakerFeeChange}
+                name="Maker Fees"
+                styles={{
+                  borderTopLeftRadius: 2,
+                  borderTopRightRadius: 2,
+                  borderColor: 'darkred',
+                  borderBottomWidth: 2,
+                }}
+              />
+              <FormTextInput
+                calculatedValue={this.state.formFields.takerFee.toString()}
+                controlFunc={this.handleTakerFeeChange}
+                name="Taker Fees"
+                styles={{
+                  borderTopLeftRadius: 2,
+                  borderTopRightRadius: 2,
+                  borderColor: 'darkred',
+                  borderBottomWidth: 2,
+                }}
+              />
+              <FormTextInput
+                controlFunc={this.handleRiskChange}
+                name="Risk"
+                styles={{
+                  borderTopLeftRadius: 2,
+                  borderTopRightRadius: 2,
+                  borderColor: 'darkred',
+                  borderBottomWidth: 2,
+                }}
+              />
+              <View style={{ flex: 1 }} />
+              <Text
+                style={[
+                  {
+                    backgroundColor: '#fff',
+                    padding: 10,
+                    color: '#000',
                     borderTopLeftRadius: 2,
                     borderTopRightRadius: 2,
                     borderColor: 'darkred',
                     borderBottomWidth: 2,
-                  }}
-                />
-                <FormTextInput
-                  calculatedValue={this.state.formFields.makerFee.toString()}
-                  controlFunc={this.handleMakerFeeChange}
-                  name="Maker Fees"
-                  styles={{
-                    borderTopLeftRadius: 2,
-                    borderTopRightRadius: 2,
-                    borderColor: 'darkred',
-                    borderBottomWidth: 2,
-                  }}
-                />
-                <FormTextInput
-                  calculatedValue={this.state.formFields.takerFee.toString()}
-                  controlFunc={this.handleTakerFeeChange}
-                  name="Taker Fees"
-                  styles={{
-                    borderTopLeftRadius: 2,
-                    borderTopRightRadius: 2,
-                    borderColor: 'darkred',
-                    borderBottomWidth: 2,
-                  }}
-                />
-                <FormTextInput
-                  controlFunc={this.handleRiskChange}
-                  name="Risk"
-                  styles={{
-                    borderTopLeftRadius: 2,
-                    borderTopRightRadius: 2,
-                    borderColor: 'darkred',
-                    borderBottomWidth: 2,
-                  }}
-                />
-                <Text
-                  style={[
-                    {
-                      backgroundColor: '#fff',
-                      padding: 10,
-                      color: '#000',
-                      borderTopLeftRadius: 2,
-                      borderTopRightRadius: 2,
-                      borderColor: 'darkred',
-                      borderBottomWidth: 2,
-                    },
-                  ]}
-                >
-                  Stake: {this.state.stake.toString()}
-                </Text>
-                <Text>
-                  Market Order = Taker Fee (Taking Liquidity off market)
-                </Text>
-                <Text>
-                  Limit Order = Maker Fee (Adding Liquidity off market)
-                </Text>
-                <Text
-                  style={styles.textLink}
-                  onPress={() =>
-                    Linking.openURL(
-                      'https://support.bitfinex.com/hc/en-us/articles/213919589-What-fees-do-you-charge-',
-                    )
-                  }
-                >
-                  More Info On Maker/Taker Fees?
-                </Text>
-              </View>
+                  },
+                ]}
+              >
+                Stake: {this.state.stake.toString()}
+              </Text>
+              <Text>
+                Market Order = Taker Fee (Taking Liquidity off market)
+              </Text>
+              <Text>Limit Order = Maker Fee (Adding Liquidity off market)</Text>
+              <Text
+                style={styles.textLink}
+                onPress={() =>
+                  Linking.openURL(
+                    'https://support.bitfinex.com/hc/en-us/articles/213919589-What-fees-do-you-charge-',
+                  )
+                }
+              >
+                More Info On Maker/Taker Fees?
+              </Text>
             </View>
           </KeyboardAvoidingView>
         </ScrollView>
